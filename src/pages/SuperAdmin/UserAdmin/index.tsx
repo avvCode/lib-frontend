@@ -339,7 +339,7 @@ const UserAdmin: React.FC = () => {
         <Table
           style={{ marginTop: '10px' }}
           columns={columns}
-          rowKey={(record) => record.id}
+          rowKey={(record) => `${record.id}`}
           dataSource={userList}
           bordered={true}
           pagination={{

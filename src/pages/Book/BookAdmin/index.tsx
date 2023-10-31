@@ -35,10 +35,10 @@ const BookAdmin: React.FC = () => {
         setTotal(res.data.total ?? 0);
         setBookList(res.data.records ?? []);
       } else {
-        message.error('获取用户数据失败');
+        message.error('获取图书数据失败');
       }
     } catch (e: any) {
-      message.error('获取用户数据失败' + e.message);
+      message.error('获取图书数据失败' + e.message);
     }
   };
   useEffect(() => {
@@ -405,7 +405,7 @@ const BookAdmin: React.FC = () => {
         <Table
           style={{ marginTop: '10px' }}
           columns={columns}
-          rowKey={(record) => record.id}
+          rowKey={(record) => `${record.id}`}
           dataSource={bookList}
           bordered={true}
           pagination={{

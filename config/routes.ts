@@ -23,6 +23,12 @@
     routes: [{ path: '/admin/userAdmin', name: '用户管理', component: './SuperAdmin/UserAdmin' }],
   },
   {
+    path: '/book/show',
+    icon: 'table',
+    name: '图书页',
+    component: './Book/BooksShow',
+  },
+  {
     path: '/book/admin',
     icon: 'crown',
     access: 'bookAdmin',

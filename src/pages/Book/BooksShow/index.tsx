@@ -103,7 +103,10 @@ const BookShow: React.FC = () => {
               size="small"
               cover={<img alt="example" src={item.bookCover} />}
             >
-              <Meta title={<Link to="#">{item.bookName}</Link>} description={item.bookAuthor} />
+              <Meta
+                title={<Link to={'/book/show/' + item.id}>{item.bookName}</Link>}
+                description={item.bookAuthor}
+              />
             </Card>
           </List.Item>
         )}

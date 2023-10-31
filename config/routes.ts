@@ -1,4 +1,18 @@
 ﻿export default [
+  { path: '/welcome', icon: 'smile', name: '首页', component: './Welcome' },
+  {
+    path: '/books/show',
+    icon: 'table',
+    name: '图书页',
+    component: './Book/BooksShow',
+  },
+  {
+    path: '/book/show/:id',
+    icon: 'table',
+    hideInMenu: true,
+    name: '图书',
+    component: './Book/BookShow',
+  },
   {
     path: '/user',
     layout: false,
@@ -14,19 +28,12 @@
     hideInMenu: true,
     access: 'login',
   },
-  { path: '/welcome', icon: 'smile', name: '首页', component: './Welcome' },
   {
     path: '/admin',
     icon: 'crown',
     access: 'superAdmin',
     name: '超级管理页',
     routes: [{ path: '/admin/userAdmin', name: '用户管理', component: './SuperAdmin/UserAdmin' }],
-  },
-  {
-    path: '/book/show',
-    icon: 'table',
-    name: '图书页',
-    component: './Book/BooksShow',
   },
   {
     path: '/book/admin',

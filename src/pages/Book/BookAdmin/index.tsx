@@ -8,7 +8,7 @@ import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
 import { ProFormUploadButton } from '@ant-design/pro-form';
 import { ProFormDigit } from '@ant-design/pro-form/lib';
-import { Button, Card, Divider, Form, Image, Input, message, Modal, Space, Table } from 'antd';
+import { Button, Card, Divider, Form, Image, Input, message, Modal, Space, Table, Tag } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
@@ -89,6 +89,7 @@ const BookAdmin: React.FC = () => {
       title: '类型',
       dataIndex: 'type',
       key: 'type',
+      render: (text) => <Tag color="green">{text}</Tag>,
     },
     {
       title: '作者',
@@ -120,13 +121,13 @@ const BookAdmin: React.FC = () => {
       title: '更新时间',
       dataIndex: 'updateTime',
       key: 'updateTime',
-      render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text) => moment(text).format('YYYY-MM-DD'),
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       key: 'createTime',
-      render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text) => moment(text).format('YYYY-MM-DD'),
     },
     {
       title: '操作',

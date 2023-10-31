@@ -1,9 +1,14 @@
 import {
-  listUserByPageUsingPOST,
-  updateUserUsingPOST,
-} from '@/services/lib-backend/userController';
-import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-components';
-import { Button, Card, Divider, Form, Input, message, Space, Table } from 'antd';
+  addBookUsingPOST,
+  deleteBookUsingPOST,
+  listBookByPageUsingPOST,
+  updateBookUsingPOST,
+} from '@/services/lib-backend/bookController';
+import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
+import { ProFormUploadButton } from '@ant-design/pro-form';
+import { ProFormDigit } from '@ant-design/pro-form/lib';
+import { Button, Card, Divider, Form, Image, Input, message, Modal, Space, Table } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
@@ -14,18 +19,18 @@ const BookAdmin: React.FC = () => {
     current: 1,
     pageSize: 5,
     bookName: '',
-    bookType: '',
-    author: '',
+    type: '',
+    bookAuthor: '',
     sortField: 'createTime',
     sortOrder: 'desc',
   };
-  const [searchParams, setSearchParams] = useState<API.UserQueryRequest>({ ...initSearchParams });
-  const [bookList, setBookList] = useState<API.User[]>();
+  const [searchParams, setSearchParams] = useState<API.BookQueryRequest>({ ...initSearchParams });
+  const [bookList, setBookList] = useState<API.Book[]>();
   const [total, setTotal] = useState<number>(0);
   const [searchForm] = Form.useForm();
   const loadData = async () => {
     try {
-      const res = await listUserByPageUsingPOST(searchParams);
+      const res = await listBookByPageUsingPOST(searchParams);
       if (res.data) {
         setTotal(res.data.total ?? 0);
         setBookList(res.data.records ?? []);
@@ -42,18 +47,38 @@ const BookAdmin: React.FC = () => {
   const onFinish = async (values: any) => {
     setSearchParams({
       ...searchParams,
-      username: values.username,
-      role: values.role,
-      idCard: values.idCard,
+      bookName: values.bookName,
+      type: values.type,
+      bookAuthor: values.bookAuthor,
     });
   };
   const reset = () => {
     setSearchParams(initSearchParams);
   };
 
-  const [editForm] = Form.useForm<API.User>();
+  const [editForm] = Form.useForm<API.Book>();
 
-  const columns: ColumnsType<API.User> = [
+  const { confirm } = Modal;
+  const showConfirm = (value: API.DeleteRequest) => {
+    confirm({
+      icon: <ExclamationCircleOutlined />,
+      content: '确定删除该书吗？',
+      async onOk() {
+        const res = await deleteBookUsingPOST(value);
+        if (res.code === 0) {
+          await loadData();
+          message.success('删除成功');
+        } else {
+          message.error('');
+        }
+      },
+      async onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+
+  const columns: ColumnsType<API.Book> = [
     {
       title: '书名',
       dataIndex: 'bookName',
@@ -67,13 +92,8 @@ const BookAdmin: React.FC = () => {
     },
     {
       title: '作者',
-      dataIndex: 'author',
-      key: 'author',
-    },
-    {
-      title: '数量',
-      dataIndex: 'bookNum',
-      key: 'bookNum',
+      dataIndex: 'bookAuthor',
+      key: 'bookAuthor',
     },
     {
       title: '简介',
@@ -84,11 +104,17 @@ const BookAdmin: React.FC = () => {
       title: '封面',
       dataIndex: 'bookCover',
       key: 'bookCover',
+      render: (bookCover) => <Image width={100} src={bookCover} />,
     },
     {
       title: '位置',
       dataIndex: 'bookLocation',
       key: 'bookLocation',
+    },
+    {
+      title: '数量',
+      dataIndex: 'bookNumber',
+      key: 'bookNumber',
     },
     {
       title: '更新时间',
@@ -107,9 +133,9 @@ const BookAdmin: React.FC = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle" key={record.id}>
-          <ModalForm<API.User>
+          <ModalForm<API.Book>
             width="380px"
-            title="修改用户"
+            title="修改图书"
             trigger={
               <Button type="text" size="small">
                 编辑
@@ -125,7 +151,7 @@ const BookAdmin: React.FC = () => {
             }}
             submitTimeout={2000}
             onFinish={async (values) => {
-              const res = await updateUserUsingPOST({ id: record.id, ...values });
+              const res = await updateBookUsingPOST({ id: record.id, ...values });
               if (res.code === 0) {
                 message.success('提交成功');
                 loadData();
@@ -138,73 +164,100 @@ const BookAdmin: React.FC = () => {
           >
             <ProFormText
               width="md"
-              name="username"
-              label="姓名"
-              initialValue={record.username}
-              placeholder="请输入真实姓名"
+              name="bookName"
+              label="书名"
+              placeholder="请输入书名"
+              initialValue={record.bookName}
               rules={[
                 {
                   required: true,
-                  message: '请输入姓名',
+                  message: '请输入书名',
                 },
               ]}
             />
             <ProFormText
               width="md"
-              name="idCard"
-              label="身份证号"
-              initialValue={record.idCard}
-              placeholder="请输入真实身份证号"
+              name="bookAuthor"
+              label="作者"
+              placeholder="请输入作者"
+              initialValue={record.bookAuthor}
               rules={[
                 {
                   required: true,
-                  message: '请输入身份证',
+                  message: '请输入作者',
                 },
               ]}
             />
             <ProFormText
               width="md"
-              name="account"
-              label="账号"
-              initialValue={record.account}
-              placeholder="请输入账号"
+              name="type"
+              label="图书类型"
+              placeholder="请输入图书类型"
+              initialValue={record.type}
               rules={[
                 {
                   required: true,
-                  message: '请输入账号',
+                  message: '请输入图书类型',
                 },
               ]}
             />
-            <ProFormSelect
+            <ProFormText
               width="md"
-              name="role"
-              label="设置权限"
-              initialValue={record.role}
-              placeholder="设置权限"
-              allowClear
-              options={[
+              name="bookLocation"
+              label="图书位置"
+              placeholder="请输入图书位置"
+              initialValue={record.bookLocation}
+              rules={[
                 {
-                  value: 'user',
-                  label: '普通用户',
-                },
-                {
-                  value: 'bookAdmin',
-                  label: '图书管理员',
-                },
-                {
-                  value: 'meetRoomAdmin',
-                  label: '会议室管理员',
+                  required: true,
+                  message: '请输入图书位置',
                 },
               ]}
             />
-            <ProFormText width="md" name="password" label="新密码" placeholder="请设置新密码" />
+            <ProFormDigit
+              width="md"
+              name="bookNumber"
+              label="图书位置"
+              placeholder="请输入图书数量"
+              initialValue={record.bookNumber}
+              rules={[
+                {
+                  required: true,
+                  message: '请输入图书数量',
+                },
+              ]}
+            />
+            <ProFormUploadButton
+              name="bookCover"
+              label="封面"
+              max={2}
+              fieldProps={{
+                name: 'file',
+              }}
+            />
+            <ProFormTextArea
+              width="md"
+              name="bookTra"
+              label="简介"
+              placeholder="请输入简介"
+              initialValue={record.bookTra}
+              rules={[
+                {
+                  required: true,
+                  message: '请输入简介',
+                },
+              ]}
+            />
           </ModalForm>
-          <a style={{ color: 'red' }}>删除</a>
+          <a style={{ color: 'red' }} onClick={() => showConfirm(record)}>
+            删除
+          </a>
         </Space>
       ),
     },
   ];
 
+  const [addForm] = Form.useForm<API.BookAddRequest>();
   return (
     <div>
       <Card>
@@ -215,7 +268,7 @@ const BookAdmin: React.FC = () => {
           <FormItem label="类型" name="type">
             <Input allowClear />
           </FormItem>
-          <FormItem label="作者" name="author">
+          <FormItem label="作者" name="bookAuthor">
             <Input allowClear />
           </FormItem>
           <Form.Item>
@@ -230,6 +283,124 @@ const BookAdmin: React.FC = () => {
           </Form.Item>
         </Form>
         <Divider />
+        <ModalForm<API.BookAddRequest>
+          width="380px"
+          title="新增图书"
+          trigger={
+            <Button type="primary">
+              <PlusOutlined />
+              新增
+            </Button>
+          }
+          form={addForm}
+          autoFocusFirstInput
+          modalProps={{
+            destroyOnClose: true,
+            onCancel: () => {
+              console.log('cancel option');
+            },
+          }}
+          submitTimeout={2000}
+          onFinish={async (values) => {
+            values.bookCover = values?.bookCover[0].thumbUrl;
+            const res = await addBookUsingPOST(values);
+            if (res.code === 0) {
+              message.success('提交成功');
+              return true;
+            } else {
+              message.error(res.message);
+              return false;
+            }
+          }}
+        >
+          <ProFormText
+            width="md"
+            name="bookName"
+            label="书名"
+            placeholder="请输入书名"
+            rules={[
+              {
+                required: true,
+                message: '请输入书名',
+              },
+            ]}
+          />
+          <ProFormText
+            width="md"
+            name="bookAuthor"
+            label="作者"
+            placeholder="请输入作者"
+            rules={[
+              {
+                required: true,
+                message: '请输入作者',
+              },
+            ]}
+          />
+          <ProFormText
+            width="md"
+            name="type"
+            label="图书类型"
+            placeholder="请输入图书类型"
+            rules={[
+              {
+                required: true,
+                message: '请输入图书类型',
+              },
+            ]}
+          />
+          <ProFormText
+            width="md"
+            name="bookLocation"
+            label="图书位置"
+            placeholder="请输入图书位置"
+            rules={[
+              {
+                required: true,
+                message: '请输入图书位置',
+              },
+            ]}
+          />
+          <ProFormDigit
+            width="md"
+            name="bookNumber"
+            label="图书数量"
+            placeholder="请输入图书数量"
+            initialValue={1}
+            rules={[
+              {
+                required: true,
+                message: '请输入图书数量',
+              },
+            ]}
+          />
+          <ProFormUploadButton
+            name="bookCover"
+            label="封面"
+            max={2}
+            fieldProps={{
+              name: 'file',
+            }}
+            rules={[
+              {
+                required: true,
+                message: '请上传封面',
+              },
+            ]}
+          />
+          <ProFormTextArea
+            width="md"
+            name="bookTra"
+            label="简介"
+            placeholder="请输入简介"
+            rules={[
+              {
+                required: true,
+                message: '请输入简介',
+              },
+            ]}
+          />
+        </ModalForm>
 
         <Table
           style={{ marginTop: '10px' }}

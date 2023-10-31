@@ -4,7 +4,7 @@ import { request } from '@umijs/max';
 
 /** addBook POST /api/book/add */
 export async function addBookUsingPOST(body: API.BookAddRequest, options?: { [key: string]: any }) {
-  return request<API.BaseResponseVoid_>('/api/book/add', {
+  return request<API.BaseResponseBoolean_>('/api/book/add', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -29,10 +29,32 @@ export async function deleteBookUsingPOST(
   });
 }
 
-/** getBooks GET /api/book/get/books */
-export async function getBooksUsingGET(options?: { [key: string]: any }) {
-  return request<API.BaseResponseListBookVO_>('/api/book/get/books', {
-    method: 'GET',
+/** listBookByPage POST /api/book/list/page */
+export async function listBookByPageUsingPOST(
+  body: API.BookQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponsePageBook_>('/api/book/list/page', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** listBookVOByPage POST /api/book/list/page/vo */
+export async function listBookVOByPageUsingPOST(
+  body: API.BookQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponsePageBookVO_>('/api/book/list/page/vo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
     ...(options || {}),
   });
 }

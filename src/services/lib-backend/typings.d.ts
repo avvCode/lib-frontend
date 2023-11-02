@@ -1,4 +1,10 @@
 declare namespace API {
+  type BaseResponseBookVO_ = {
+    code?: number;
+    data?: BookVO;
+    message?: string;
+  };
+
   type BaseResponseBoolean_ = {
     code?: number;
     data?: boolean;
@@ -219,11 +225,11 @@ declare namespace API {
   type BookUpdateRequest = {
     bookAuthor?: string;
     bookCover?: string;
-    bookId?: number;
     bookLocation?: string;
     bookName?: string;
     bookNumber?: number;
     bookTra?: string;
+    id?: number;
     type?: string;
   };
 
@@ -234,6 +240,7 @@ declare namespace API {
     bookName?: string;
     bookNumber?: number;
     bookTra?: string;
+    createTime?: string;
     id?: number;
     type?: string;
   };
@@ -273,7 +280,7 @@ declare namespace API {
 
   type CommentsVO = {
     bookVO?: BookVO;
-    checkUserId?: string;
+    checkUserVO?: UserVO;
     content?: string;
     id?: number;
     isChecked?: number;
@@ -281,6 +288,11 @@ declare namespace API {
   };
 
   type DeleteRequest = {
+    id?: number;
+  };
+
+  type getBookByIdUsingGETParams = {
+    /** id */
     id?: number;
   };
 
@@ -625,6 +637,7 @@ declare namespace API {
     foulTimes?: number;
     id?: number;
     role?: string;
+    userAvatar?: string;
     username?: string;
   };
 }

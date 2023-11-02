@@ -104,7 +104,7 @@ const BookShow: React.FC = () => {
               cover={<img alt="example" src={item.bookCover} />}
             >
               <Meta
-                title={<Link to={'/book/show/' + item.id}>{item.bookName}</Link>}
+                title={<Link to={`/book/show/${item.id}`}>{item.bookName}</Link>}
                 description={item.bookAuthor}
               />
             </Card>

@@ -1,5 +1,4 @@
 import Footer from '@/components/Footer';
-import { Question } from '@/components/RightContent';
 import { getLoginUserUsingGET } from '@/services/lib-backend/userController';
 import { LinkOutlined } from '@ant-design/icons';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
@@ -47,7 +46,6 @@ export async function getInitialState(): Promise<{
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    actionsRender: () => [<Question key="doc" />],
     avatarProps: {
       src: initialState?.currentUser?.userAvatar,
       title: <AvatarName />,
@@ -127,7 +125,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request = {
-  baseURL: 'http://localhost:8080',
+  baseURL: 'http://192.168.33.37:8080',
   withCredentials: true,
   ...errorConfig,
 };

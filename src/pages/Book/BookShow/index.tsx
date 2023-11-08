@@ -1,16 +1,18 @@
-import { getBookByIdUsingGET } from '@/services/lib-backend/bookController';
-import { Avatar, Button, Image, List, message, Skeleton, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-
+import { borrowBookUsingPOST, getBookByIdUsingGET } from '@/services/lib-backend/bookController';
 import {
   addCommentsUsingPOST,
   listCommentsVOByPageUsingPOST,
 } from '@/services/lib-backend/commentController';
-import { addUserUsingPOST } from '@/services/lib-backend/userController';
+import { LikeOutlined } from '@ant-design/icons';
 import { ModalForm, ProCard, ProFormText } from '@ant-design/pro-components';
+import { Avatar, Button, DatePicker, Form, Image, List, message, Skeleton, Typography } from 'antd';
+import { RangePickerProps } from 'antd/es/date-picker';
 import TextArea from 'antd/es/input/TextArea';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 
 const { Paragraph } = Typography;
 
@@ -126,7 +128,18 @@ const BookShow: React.FC = () => {
         <Button onClick={onLoadMore}>loading more</Button>
       </div>
     ) : null;
-
+  const { RangePicker } = DatePicker;
+  const [dates, setDates] = useState<RangeValue>(null);
+  type RangeValue = [Dayjs | null, Dayjs | null] | null;
+  // eslint-disable-next-line arrow-body-style
+  const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+    // Can not select days before today and today
+    return current && current <= dayjs().endOf('day');
+  };
+  const datePicker = (dateStrings: [string, string], values: RangeValue) => {
+    setDates(values);
+  };
+  const [addForm] = Form.useForm<API.BookBorrowRecordAddRequest>();
   return (
     <div>
       <ProCard
@@ -134,11 +147,11 @@ const BookShow: React.FC = () => {
         bordered
         split="vertical"
         extra={
-          <ModalForm<API.BookBorrowRecordAddRequest>
+          <ModalForm<API.BookBorrowRequest>
             width="380px"
             title="申请借书"
             trigger={<Button type="primary">申请借书</Button>}
-            //form={addForm}
+            form={addForm}
             autoFocusFirstInput
             modalProps={{
               destroyOnClose: true,
@@ -149,7 +162,16 @@ const BookShow: React.FC = () => {
             submitTimeout={2000}
             onFinish={async (values) => {
               console.log(values);
-              const res = await addUserUsingPOST(values);
+              console.log(dates);
+              let borrowDays;
+              if (dates) {
+                borrowDays = moment(dates[1]).diff(dates[0], 'days');
+              }
+              const res = await borrowBookUsingPOST({
+                borrowDays: borrowDays,
+                ...values,
+                bookId: params.id,
+              });
               if (res.code === 0) {
                 message.success('提交成功');
                 return true;
@@ -183,30 +205,7 @@ const BookShow: React.FC = () => {
                 },
               ]}
             />
-            <ProFormText
-              width="md"
-              name="account"
-              label="账号"
-              placeholder="请输入账号"
-              rules={[
-                {
-                  required: true,
-                  message: '请输入账号',
-                },
-              ]}
-            />
-            <ProFormText
-              width="md"
-              name="password"
-              label="密码"
-              placeholder="请设置密码"
-              rules={[
-                {
-                  required: true,
-                  message: '请输入密码',
-                },
-              ]}
-            />
+            <RangePicker disabledDate={disabledDate} onChange={datePicker} />
           </ModalForm>
         }
       >
@@ -242,6 +241,7 @@ const BookShow: React.FC = () => {
                 description={item.content}
               />
             </Skeleton>
+            {<LikeOutlined />}
           </List.Item>
         )}
       />

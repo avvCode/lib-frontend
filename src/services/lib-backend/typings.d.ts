@@ -1,4 +1,44 @@
 declare namespace API {
+  type Announcement = {
+    content?: string;
+    createTime?: string;
+    creatorId?: number;
+    id?: number;
+    isDelete?: number;
+    updateTime?: string;
+  };
+
+  type AnnouncementAddRequest = {
+    content?: string;
+  };
+
+  type AnnouncementQueryRequest = {
+    account?: string;
+    content?: string;
+    current?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+  };
+
+  type AnnouncementUpdateRequest = {
+    content?: string;
+    id?: number;
+  };
+
+  type AnnouncementVO = {
+    content?: string;
+    createTime?: string;
+    id?: number;
+    userVO?: UserVO;
+  };
+
+  type BaseResponseAnnouncementVO_ = {
+    code?: number;
+    data?: AnnouncementVO;
+    message?: string;
+  };
+
   type BaseResponseBookVO_ = {
     code?: number;
     data?: BookVO;
@@ -20,6 +60,24 @@ declare namespace API {
   type BaseResponseLong_ = {
     code?: number;
     data?: number;
+    message?: string;
+  };
+
+  type BaseResponseMeetingRoomVO_ = {
+    code?: number;
+    data?: MeetingRoomVO;
+    message?: string;
+  };
+
+  type BaseResponsePageAnnouncement_ = {
+    code?: number;
+    data?: PageAnnouncement_;
+    message?: string;
+  };
+
+  type BaseResponsePageAnnouncementVO_ = {
+    code?: number;
+    data?: PageAnnouncementVO_;
     message?: string;
   };
 
@@ -68,6 +126,42 @@ declare namespace API {
   type BaseResponsePageCommentsVO_ = {
     code?: number;
     data?: PageCommentsVO_;
+    message?: string;
+  };
+
+  type BaseResponsePageLikeRecord_ = {
+    code?: number;
+    data?: PageLikeRecord_;
+    message?: string;
+  };
+
+  type BaseResponsePageLikeRecordVO_ = {
+    code?: number;
+    data?: PageLikeRecordVO_;
+    message?: string;
+  };
+
+  type BaseResponsePageLikes_ = {
+    code?: number;
+    data?: PageLikes_;
+    message?: string;
+  };
+
+  type BaseResponsePageLikesVO_ = {
+    code?: number;
+    data?: PageLikesVO_;
+    message?: string;
+  };
+
+  type BaseResponsePageMeetingRecord_ = {
+    code?: number;
+    data?: PageMeetingRecord_;
+    message?: string;
+  };
+
+  type BaseResponsePageMeetingRecordVO_ = {
+    code?: number;
+    data?: PageMeetingRecordVO_;
     message?: string;
   };
 
@@ -149,7 +243,10 @@ declare namespace API {
     userId?: number;
   };
 
-  type BlacklistVO = true;
+  type BlacklistVO = {
+    blackUser?: UserVO;
+    id?: number;
+  };
 
   type Book = {
     bookAuthor?: string;
@@ -157,6 +254,7 @@ declare namespace API {
     bookLocation?: string;
     bookName?: string;
     bookNumber?: number;
+    bookRemaining?: number;
     bookTra?: string;
     createTime?: string;
     id?: number;
@@ -171,6 +269,7 @@ declare namespace API {
     bookLocation?: string;
     bookName?: string;
     bookNumber?: number;
+    bookRemaining?: number;
     bookTra?: string;
     type?: string;
   };
@@ -207,9 +306,17 @@ declare namespace API {
   type BookBorrowRecordVO = {
     bookVO?: BookVO;
     borrowDays?: number;
+    createTime?: string;
     id?: number;
-    startTime?: string;
+    isReturned?: number;
     userVO?: UserVO;
+  };
+
+  type BookBorrowRequest = {
+    bookId?: number;
+    borrowDays?: number;
+    idCard?: string;
+    username?: string;
   };
 
   type BookQueryRequest = {
@@ -222,12 +329,17 @@ declare namespace API {
     type?: string;
   };
 
+  type BookReturnRequest = {
+    borrowBookRecordId?: number;
+  };
+
   type BookUpdateRequest = {
     bookAuthor?: string;
     bookCover?: string;
     bookLocation?: string;
     bookName?: string;
     bookNumber?: number;
+    bookRemaining?: number;
     bookTra?: string;
     id?: number;
     type?: string;
@@ -291,7 +403,22 @@ declare namespace API {
     id?: number;
   };
 
+  type getAnnouncementByIdUsingGETParams = {
+    /** id */
+    id?: number;
+  };
+
   type getBookByIdUsingGETParams = {
+    /** id */
+    id?: number;
+  };
+
+  type getMeetingRoomBorrowOwnerUsingGETParams = {
+    /** meetingRoomId */
+    meetingRoomId?: string;
+  };
+
+  type getMeetingRoomByIdUsingGETParams = {
     /** id */
     id?: number;
   };
@@ -306,6 +433,66 @@ declare namespace API {
     id?: number;
   };
 
+  type LikeRecord = {
+    createTime?: string;
+    id?: number;
+    isDelete?: number;
+    likesId?: number;
+    status?: number;
+    updateTime?: string;
+  };
+
+  type LikeRecordAddRequest = {
+    likesId?: number;
+    status?: number;
+  };
+
+  type LikeRecordQueryRequest = {
+    account?: string;
+    current?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    status?: number;
+  };
+
+  type LikeRecordVO = {
+    id?: number;
+    likesVO?: LikesVO;
+    status?: number;
+  };
+
+  type Likes = {
+    commentId?: number;
+    createTime?: string;
+    id?: number;
+    isDelete?: number;
+    updateTime?: string;
+    userId?: number;
+  };
+
+  type LikesAddRequest = {
+    commentId?: number;
+  };
+
+  type LikesCancelRequest = {
+    commentId?: number;
+  };
+
+  type LikesQueryRequest = {
+    account?: string;
+    current?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+  };
+
+  type LikesVO = {
+    commentsVO?: CommentsVO;
+    id?: number;
+    userVO?: UserVO;
+  };
+
   type LoginUserVO = {
     account?: string;
     createTime?: string;
@@ -316,76 +503,163 @@ declare namespace API {
     username?: string;
   };
 
-  type MeetingRoom = {
+  type MeetingRecord = {
     createTime?: string;
     id?: number;
     isDelete?: number;
-    name?: string;
+    meetingRoomId?: number;
+    participantId?: number;
+    status?: number;
     updateTime?: string;
   };
 
-  type MeetingRoomAddRequest = {
-    meetingRoomName?: string;
-  };
-
-  type MeetingRoomBorrowRecord = {
-    borrowTime?: string;
-    createTime?: string;
-    id?: number;
-    isDelete?: number;
-    isReturn?: number;
+  type MeetingRecordAddRequest = {
     meetingRoomId?: number;
-    updateTime?: string;
-    userId?: number;
+    participantId?: number;
   };
 
-  type MeetingRoomBorrowRecordAddRequest = {
-    borrowTime?: string;
-    meetingRoomId?: number;
-  };
-
-  type MeetingRoomBorrowRecordQueryRequest = {
-    borrowTime?: string;
+  type MeetingRecordQueryRequest = {
+    account?: string;
     current?: number;
     meetingRoomId?: number;
     pageSize?: number;
     sortField?: string;
     sortOrder?: string;
+    status?: number;
+  };
+
+  type MeetingRecordUpdateRequest = {
+    id?: number;
+    meetingRoomId?: number;
+    status?: number;
+  };
+
+  type MeetingRecordVO = {
+    id?: number;
+    meetingRoomVO?: MeetingRoomVO;
+    participantVO?: UserVO;
+    status?: number;
+  };
+
+  type MeetingRoom = {
+    capacity?: number;
+    createTime?: string;
+    id?: number;
+    isDelete?: number;
+    isEmpty?: number;
+    name?: string;
+    updateTime?: string;
+  };
+
+  type MeetingRoomAddRequest = {
+    capacity?: number;
+    name?: string;
+  };
+
+  type MeetingRoomBorrowRecord = {
+    checkUserId?: string;
+    createTime?: string;
+    endTime?: string;
+    id?: number;
+    isDelete?: number;
+    meetingRoomId?: number;
+    startTime?: string;
+    status?: number;
+    updateTime?: string;
+    userId?: number;
+  };
+
+  type MeetingRoomBorrowRecordAddRequest = {
+    endTime?: string;
+    idCard?: string;
+    meetingRoomId?: number;
+    startTime?: string;
+    username?: string;
+  };
+
+  type MeetingRoomBorrowRecordQueryRequest = {
+    current?: number;
+    endTime?: string;
+    meetingRoomId?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    startTime?: string;
+    status?: number;
     userId?: number;
   };
 
   type MeetingRoomBorrowRecordUpdateRequest = {
-    meetingRoomBorrowRecordId?: number;
+    checkUserId?: string;
+    endTime?: string;
+    id?: number;
+    startTime?: string;
+    status?: number;
   };
 
   type MeetingRoomBorrowRecordVO = {
-    borrowTime?: string;
-    meetingRoomRecordId?: number;
+    checkUser?: UserVO;
+    endTime?: string;
+    id?: number;
     meetingRoomVO?: MeetingRoomVO;
+    startTime?: string;
+    status?: number;
     userVO?: UserVO;
   };
 
   type MeetingRoomQueryRequest = {
     current?: number;
-    meetingRoomName?: string;
+    isEmpty?: number;
+    name?: string;
     pageSize?: number;
     sortField?: string;
     sortOrder?: string;
   };
 
   type MeetingRoomUpdateRequest = {
-    meetingRoomId?: number;
-    meetingRoomName?: string;
+    capacity?: number;
+    id?: number;
+    isEmpty?: number;
+    name?: string;
   };
 
   type MeetingRoomVO = {
+    capacity?: number;
+    createTime?: string;
     id?: number;
+    isEmpty?: number;
     name?: string;
   };
 
   type OrderItem = {
     asc?: boolean;
     column?: string;
+  };
+
+  type PageAnnouncement_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Announcement[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageAnnouncementVO_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: AnnouncementVO[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
   };
 
   type PageBlacklist_ = {
@@ -487,6 +761,84 @@ declare namespace API {
     orders?: OrderItem[];
     pages?: number;
     records?: CommentsVO[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageLikeRecord_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: LikeRecord[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageLikeRecordVO_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: LikeRecordVO[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageLikes_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Likes[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageLikesVO_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: LikesVO[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageMeetingRecord_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: MeetingRecord[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageMeetingRecordVO_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: MeetingRecordVO[];
     searchCount?: boolean;
     size?: number;
     total?: number;

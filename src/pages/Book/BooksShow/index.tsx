@@ -47,6 +47,7 @@ const BookShow: React.FC = () => {
   useEffect(() => {
     loadData();
   }, [searchParams]);
+
   return (
     <div>
       <Form layout="inline" form={searchForm} onFinish={onFinish}>

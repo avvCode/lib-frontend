@@ -1,11 +1,25 @@
 import { PageContainer } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
-import { Card, theme } from 'antd';
-import React from 'react';
+import { Card, Divider, message, theme } from 'antd';
+import React, { useEffect, useState } from 'react';
+
+import { getNewAnnouncementUsingGET } from '@/services/lib-backend/announcementController';
 
 const Welcome: React.FC = () => {
   const { token } = theme.useToken();
   const { initialState } = useModel('@@initialState');
+  const [announcement, setAnnouncement] = useState<API.AnnouncementVO>();
+  const loadData = async () => {
+    const res = await getNewAnnouncementUsingGET();
+    if (res.code === 0) {
+      setAnnouncement(res.data);
+    } else {
+      message.error('加载公告失败');
+    }
+  };
+  useEffect(() => {
+    loadData();
+  });
   return (
     <PageContainer>
       <Card
@@ -37,6 +51,10 @@ const Welcome: React.FC = () => {
             欢迎使用 图书馆管理系统
           </div>
         </div>
+      </Card>
+      <Divider />
+      <Card title="今日公告" bordered={false}>
+        <p>{announcement?.content ?? '暂无公告'}</p>
       </Card>
     </PageContainer>
   );

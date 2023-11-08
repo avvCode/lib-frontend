@@ -8,5 +8,9 @@ export default function access(initialState: { currentUser?: API.LoginUserVO } |
     bookAdmin: () => currentUser && currentUser.role === 'bookAdmin',
     meetingRoomAdmin: () => currentUser && currentUser.role === 'meetingRoomAdmin',
     login: () => currentUser,
+    // meetingCreator: async (meetingRoomId: string) => {
+    //
+    //   currentUser != null
+    // },
   };
 }

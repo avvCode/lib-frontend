@@ -13,6 +13,12 @@
     component: './MeetingRoom/MeetingRoomsShow',
   },
   {
+    path: '/meetingRoom/show/:id',
+    hideInMenu: true,
+    name: '会议',
+    component: './MeetingRoom/MeetingRoomShow',
+  },
+  {
     path: '/book/show/:id',
     icon: 'table',
     hideInMenu: true,
@@ -25,6 +31,19 @@
     name: '会议室管理',
     access: 'meetingRoomAdmin',
     component: './MeetingRoom/MeetingRoomAdmin',
+  },
+  {
+    path: '/meetingRoom/record/admin',
+    icon: 'crown',
+    name: '会议室申请管理',
+    access: 'meetingRoomAdmin',
+    component: './MeetingRoom/MeetingRoomBorrowRecordAdmin',
+  },
+  {
+    path: '/user/meetingRoomRecordList',
+    hideInMenu: true,
+    name: '会议室申请记录',
+    component: './MeetingRoom/MeetingRoomBorrowRecord',
   },
   {
     path: '/user',
@@ -42,11 +61,32 @@
     access: 'login',
   },
   {
+    path: 'user/meetingRoom/apply/admin/:id',
+    name: '参会人管理',
+    component: './MeetingRoom/MeetingRoomApplyAdmin',
+    hideInMenu: true,
+    access: 'login',
+  },
+  {
     path: '/admin',
     icon: 'crown',
     access: 'superAdmin',
     name: '超级管理',
-    routes: [{ path: '/admin/userAdmin', name: '用户管理', component: './SuperAdmin/UserAdmin' }],
+    routes: [
+      { path: '/admin/userAdmin', name: '用户管理', component: './SuperAdmin/UserAdmin' },
+      {
+        path: '/admin/blackListAdmin',
+        name: '黑名单管理',
+        component: './SuperAdmin/BlackListAdmin',
+      },
+    ],
+  },
+  {
+    path: '/announcement/admin',
+    icon: 'crown',
+    access: 'bookAdmin',
+    name: '公告管理',
+    component: './Announcement/AnnouncementAdmin',
   },
   {
     path: '/book/admin',
@@ -62,7 +102,6 @@
     name: '图书评论管理',
     component: './Book/BookCommentAdmin',
   },
-  //{ icon: 'table', path: '/list',name:'列表' ,component: './TableList' },
   { path: '/', redirect: '/welcome' },
   { path: '*', layout: false, component: './404' },
 ];

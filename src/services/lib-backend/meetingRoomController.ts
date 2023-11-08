@@ -18,7 +18,7 @@ export async function addMeetingRoomUsingPOST(
 }
 
 /** deleteMeetingRoom POST /api/meetingRoom/delete */
-export async function deleteMeetingRoomUsingPOST1(
+export async function deleteMeetingRoomUsingPOST(
   body: API.DeleteRequest,
   options?: { [key: string]: any },
 ) {
@@ -28,6 +28,21 @@ export async function deleteMeetingRoomUsingPOST1(
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+/** getMeetingRoomById GET /api/meetingRoom/get */
+export async function getMeetingRoomByIdUsingGET(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getMeetingRoomByIdUsingGETParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseMeetingRoomVO_>('/api/meetingRoom/get', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
     ...(options || {}),
   });
 }
@@ -63,7 +78,7 @@ export async function listMeetingRoomVOByPageUsingPOST(
 }
 
 /** updateMeetingRoom POST /api/meetingRoom/update */
-export async function updateMeetingRoomUsingPOST1(
+export async function updateMeetingRoomUsingPOST(
   body: API.MeetingRoomUpdateRequest,
   options?: { [key: string]: any },
 ) {

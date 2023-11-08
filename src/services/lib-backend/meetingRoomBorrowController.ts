@@ -17,8 +17,8 @@ export async function addMeetingRoomBorrowRecordUsingPOST(
   });
 }
 
-/** deleteMeetingRoom POST /api/borrowRecord/meetingRoom/delete */
-export async function deleteMeetingRoomUsingPOST(
+/** deleteMeetingRoomBorrowRecord POST /api/borrowRecord/meetingRoom/delete */
+export async function deleteMeetingRoomBorrowRecordUsingPOST(
   body: API.DeleteRequest,
   options?: { [key: string]: any },
 ) {
@@ -28,6 +28,21 @@ export async function deleteMeetingRoomUsingPOST(
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+/** getMeetingRoomBorrowOwner GET /api/borrowRecord/meetingRoom/get/owner */
+export async function getMeetingRoomBorrowOwnerUsingGET(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getMeetingRoomBorrowOwnerUsingGETParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseLong_>('/api/borrowRecord/meetingRoom/get/owner', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
     ...(options || {}),
   });
 }
@@ -68,8 +83,8 @@ export async function listMeetingRoomBorrowRecordVOByPageUsingPOST(
   );
 }
 
-/** updateMeetingRoom POST /api/borrowRecord/meetingRoom/update */
-export async function updateMeetingRoomUsingPOST(
+/** updateMeetingRoomBorrowRecord POST /api/borrowRecord/meetingRoom/update */
+export async function updateMeetingRoomBorrowRecordUsingPOST(
   body: API.MeetingRoomBorrowRecordUpdateRequest,
   options?: { [key: string]: any },
 ) {

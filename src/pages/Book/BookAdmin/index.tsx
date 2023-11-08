@@ -218,7 +218,7 @@ const BookAdmin: React.FC = () => {
             <ProFormDigit
               width="md"
               name="bookNumber"
-              label="图书位置"
+              label="图书数量"
               placeholder="请输入图书数量"
               initialValue={record.bookNumber}
               rules={[

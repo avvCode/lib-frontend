@@ -1,35 +1,31 @@
-import { addBlacklistUsingPOST } from '@/services/lib-backend/blackListController';
-import {
-  addUserUsingPOST,
-  deleteUserUsingPOST,
-  listUserByPageUsingPOST,
-  updateUserUsingPOST,
-} from '@/services/lib-backend/userController';
-import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { listBlacklistVOByPageUsingPOST } from '@/services/lib-backend/blackListController';
+import { deleteUserUsingPOST, updateUserUsingPOST } from '@/services/lib-backend/userController';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-components';
-import { Button, Card, Divider, Form, Input, message, Modal, Select, Space, Table } from 'antd';
+import { Button, Card, Divider, Form, Input, message, Modal, Space, Table } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
-const UserAdmin: React.FC = () => {
+const BlackListAdmin: React.FC = () => {
   const { confirm } = Modal;
   const initSearchParams = {
     current: 1,
     pageSize: 5,
     username: '',
-    role: '',
     sortField: 'createTime',
     sortOrder: 'desc',
   };
-  const [searchParams, setSearchParams] = useState<API.UserQueryRequest>({ ...initSearchParams });
-  const [userList, setUserList] = useState<API.User[]>();
+  const [searchParams, setSearchParams] = useState<API.BlacklistQueryRequest>({
+    ...initSearchParams,
+  });
+  const [userList, setUserList] = useState<API.BlacklistVO[]>();
   const [total, setTotal] = useState<number>(0);
 
   const loadData = async () => {
     try {
-      const res = await listUserByPageUsingPOST(searchParams);
+      const res = await listBlacklistVOByPageUsingPOST(searchParams);
       if (res.data) {
         setTotal(res.data.total ?? 0);
         setUserList(res.data.records ?? []);
@@ -44,74 +40,58 @@ const UserAdmin: React.FC = () => {
     loadData();
   }, [searchParams]);
 
-  const showConfirm = (value: API.DeleteRequest, flag: number) => {
-    if (flag) {
-      confirm({
-        icon: <ExclamationCircleOutlined />,
-        content: '确定删除该用户吗？',
-        async onOk() {
-          console.log('OK');
-          const res = await deleteUserUsingPOST(value);
-          if (res.code === 0) {
-            await loadData();
-            message.success('删除成功');
-          } else {
-            message.error('');
-          }
-        },
-        async onCancel() {
-          console.log('Cancel');
-        },
-      });
-    } else {
-      confirm({
-        icon: <ExclamationCircleOutlined />,
-        content: '确定拉黑该用户吗？',
-        async onOk() {
-          console.log('OK');
-          const res = await addBlacklistUsingPOST({ userId: value?.id });
-          if (res.code === 0) {
-            await loadData();
-            message.success('拉黑成功');
-          } else {
-            message.error('');
-          }
-        },
-        async onCancel() {
-          console.log('Cancel');
-        },
-      });
-    }
+  const showConfirm = (value: API.DeleteRequest) => {
+    confirm({
+      icon: <ExclamationCircleOutlined />,
+      content: '确定删除该用户吗？',
+      async onOk() {
+        console.log('OK');
+        const res = await deleteUserUsingPOST(value);
+        if (res.code === 0) {
+          await loadData();
+          message.success('删除成功');
+        } else {
+          message.error('');
+        }
+      },
+      async onCancel() {
+        console.log('Cancel');
+      },
+    });
   };
 
-  const [editForm] = Form.useForm<API.User>();
+  const [editForm] = Form.useForm<API.BlacklistVO>();
 
-  const columns: ColumnsType<API.User> = [
+  const columns: ColumnsType<API.BlacklistVO> = [
     {
       title: '姓名',
-      dataIndex: 'username',
+      dataIndex: 'blackUser',
       key: 'username',
-      render: (text) => <a>{text}</a>,
+      render: (blackUser) => <a>{blackUser.username}</a>,
     },
     {
       title: '身份证号',
-      dataIndex: 'idCard',
-      key: 'idCard',
+      dataIndex: 'blackUser',
+      key: 'blackUser.idCard',
+      render: (blackUser) => blackUser.idCard,
     },
     {
       title: '账号',
-      dataIndex: 'account',
-      key: 'account',
+      dataIndex: 'blackUser',
+      key: 'blackUser.account',
+      render: (blackUser) => blackUser.account,
     },
     {
       title: '角色',
-      dataIndex: 'role',
-      key: 'role',
+      dataIndex: 'blackUser',
+      key: 'blackUser.role',
+      render: (blackUser) => blackUser.role,
     },
     {
       title: '违规次数',
-      dataIndex: 'foulTimes',
-      key: 'foulTimes',
+      dataIndex: 'blackUser',
+      key: 'blackUser.foulTimes',
+      render: (blackUser) => blackUser.foulTimes,
     },
     {
       title: '更新时间',
@@ -222,49 +202,31 @@ const UserAdmin: React.FC = () => {
             />
             <ProFormText width="md" name="password" label="新密码" placeholder="请设置新密码" />
           </ModalForm>
-          <a style={{ color: 'red' }} onClick={() => showConfirm(record, 0)}>
-            拉黑
-          </a>
-          <a style={{ color: 'red' }} onClick={() => showConfirm(record, 1)}>
+          <a style={{ color: 'red' }} onClick={() => showConfirm(record)}>
             删除
           </a>
         </Space>
       ),
     },
   ];
-
-  const handleChange = (value: string) => {
-    setSearchParams({ ...searchParams, role: value });
-  };
   const [searchForm] = Form.useForm();
 
   const onFinish = async (values: any) => {
     setSearchParams({
       ...searchParams,
       username: values.username,
-      role: values.role,
       idCard: values.idCard,
     });
   };
   const reset = () => {
     setSearchParams(initSearchParams);
   };
-  const [addForm] = Form.useForm<API.UserAddRequest>();
-
   return (
     <div>
       <Card>
         <Form layout="inline" form={searchForm} onFinish={onFinish}>
           <FormItem label="姓名" name="username">
             <Input allowClear />
-          </FormItem>
-
-          <FormItem label="角色" name="role">
-            <Select allowClear onChange={handleChange} size="middle" style={{ width: 200 }}>
-              <Select.Option value="user">用户</Select.Option>
-              <Select.Option value="bookAdmin">图书管理员</Select.Option>
-              <Select.Option value="meetingRoomAdmin">会议室管理员</Select.Option>
-            </Select>
           </FormItem>
           <FormItem label="身份证" name="idCard">
             <Input allowClear />
@@ -281,85 +243,6 @@ const UserAdmin: React.FC = () => {
           </Form.Item>
         </Form>
         <Divider />
-        <ModalForm<API.UserAddRequest>
-          width="380px"
-          title="新增用户"
-          trigger={
-            <Button type="primary">
-              <PlusOutlined />
-              新增
-            </Button>
-          }
-          form={addForm}
-          autoFocusFirstInput
-          modalProps={{
-            destroyOnClose: true,
-            onCancel: () => {
-              console.log('cancel option');
-            },
-          }}
-          submitTimeout={2000}
-          onFinish={async (values) => {
-            console.log(values);
-            const res = await addUserUsingPOST(values);
-            if (res.code === 0) {
-              message.success('提交成功');
-              return true;
-            } else {
-              message.error(res.message);
-              return false;
-            }
-          }}
-        >
-          <ProFormText
-            width="md"
-            name="username"
-            label="姓名"
-            placeholder="请输入真实姓名"
-            rules={[
-              {
-                required: true,
-                message: '请输入姓名',
-              },
-            ]}
-          />
-          <ProFormText
-            width="md"
-            name="idCard"
-            label="身份证号"
-            placeholder="请输入真实身份证号"
-            rules={[
-              {
-                required: true,
-                message: '请输入身份证',
-              },
-            ]}
-          />
-          <ProFormText
-            width="md"
-            name="account"
-            label="账号"
-            placeholder="请输入账号"
-            rules={[
-              {
-                required: true,
-                message: '请输入账号',
-              },
-            ]}
-          />
-          <ProFormText
-            width="md"
-            name="password"
-            label="密码"
-            placeholder="请设置密码"
-            rules={[
-              {
-                required: true,
-                message: '请输入密码',
-              },
-            ]}
-          />
-        </ModalForm>
         <Table
           style={{ marginTop: '10px' }}
           columns={columns}
@@ -383,4 +266,4 @@ const UserAdmin: React.FC = () => {
     </div>
   );
 };
-export default UserAdmin;
+export default BlackListAdmin;

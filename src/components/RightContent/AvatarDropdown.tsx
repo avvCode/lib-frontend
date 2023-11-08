@@ -1,5 +1,5 @@
 import { userLogoutUsingPOST } from '@/services/lib-backend/userController';
-import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, TableOutlined, UserOutlined } from '@ant-design/icons';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { history, useModel } from '@umijs/max';
 import { Spin } from 'antd';
@@ -20,7 +20,7 @@ export const AvatarName = () => {
   return <span className="anticon">{currentUser?.username}</span>;
 };
 
-export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, children }) => {
+export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ children }) => {
   /**
    * 退出登录，并且将当前的 url 保存
    */
@@ -100,11 +100,11 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
       icon: <UserOutlined />,
       label: '个人中心',
     },
-    // {
-    //   key: 'settings',
-    //   icon: <SettingOutlined/>,
-    //   label: '个人设置',
-    // },
+    {
+      key: 'meetingRoomRecordList',
+      icon: <TableOutlined />,
+      label: '会议室申请记录',
+    },
     {
       type: 'divider' as const,
     },

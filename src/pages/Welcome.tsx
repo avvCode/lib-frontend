@@ -19,7 +19,7 @@ const Welcome: React.FC = () => {
   };
   useEffect(() => {
     loadData();
-  });
+  }, [token]);
   return (
     <PageContainer>
       <Card

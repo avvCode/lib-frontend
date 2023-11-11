@@ -11,7 +11,7 @@ import { errorConfig } from './requestErrorConfig';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
-
+const banPath = '/user/appeal';
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
@@ -62,6 +62,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
+      }
+      // 如果是被封的账号，重定向到账号申诉
+      if (initialState?.currentUser?.role === 'ban' && location.pathname !== banPath) {
+        history.push(banPath);
       }
     },
     layoutBgImgList: [
@@ -125,7 +129,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request = {
-  baseURL: 'http://192.168.33.37:8080',
+  baseURL: 'http://localhost:8080',
   withCredentials: true,
   ...errorConfig,
 };

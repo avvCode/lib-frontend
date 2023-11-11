@@ -17,12 +17,12 @@ export async function addLikeRecordUsingPOST(
   });
 }
 
-/** deleteLikeRecord POST /api/likeRecord/delete */
-export async function deleteLikeRecordUsingPOST(
-  body: API.DeleteRequest,
+/** doLike POST /api/likeRecord/like */
+export async function doLikeUsingPOST(
+  body: API.LikeRecordAddRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseVoid_>('/api/likeRecord/delete', {
+  return request<API.BaseResponseInt_>('/api/likeRecord/like', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

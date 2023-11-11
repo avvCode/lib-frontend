@@ -3,9 +3,21 @@ import {
   addCommentsUsingPOST,
   listCommentsVOByPageUsingPOST,
 } from '@/services/lib-backend/commentController';
-import { LikeOutlined } from '@ant-design/icons';
+import { doLikeUsingPOST } from '@/services/lib-backend/likeRecordController';
+import { LikeFilled, LikeOutlined } from '@ant-design/icons';
 import { ModalForm, ProCard, ProFormText } from '@ant-design/pro-components';
-import { Avatar, Button, DatePicker, Form, Image, List, message, Skeleton, Typography } from 'antd';
+import {
+  Avatar,
+  Button,
+  DatePicker,
+  Form,
+  Image,
+  List,
+  message,
+  Skeleton,
+  Space,
+  Typography,
+} from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import TextArea from 'antd/es/input/TextArea';
 import type { Dayjs } from 'dayjs';
@@ -23,6 +35,8 @@ interface DataType {
   id?: number;
   isChecked?: number;
   userVO?: API.UserVO;
+  likeNumber?: number;
+  like?: boolean;
   loading?: boolean;
 }
 
@@ -51,6 +65,7 @@ const BookShow: React.FC = () => {
           setBook(res.data);
           const res1 = await listCommentsVOByPageUsingPOST({
             bookId: res.data?.id,
+            isChecked: 1,
             ...initSearchParams,
           });
           if (res1.code === 0) {
@@ -91,6 +106,7 @@ const BookShow: React.FC = () => {
       const res = await listCommentsVOByPageUsingPOST({
         ...initSearchParams,
         bookId: book?.id,
+        isChecked: 1,
         current: current,
       });
       setCurrent(current + 1);
@@ -140,6 +156,7 @@ const BookShow: React.FC = () => {
     setDates(values);
   };
   const [addForm] = Form.useForm<API.BookBorrowRecordAddRequest>();
+
   return (
     <div>
       <ProCard
@@ -241,7 +258,41 @@ const BookShow: React.FC = () => {
                 description={item.content}
               />
             </Skeleton>
-            {<LikeOutlined />}
+            {item.like ? (
+              <Button
+                onClick={async () => {
+                  const res = await doLikeUsingPOST({ commentId: item.id });
+                  if (res.code === 0) {
+                    await loadData();
+                    message.success('取消成功');
+                  } else {
+                    message.error('取消失败');
+                  }
+                }}
+              >
+                <Space>
+                  <LikeFilled />
+                  {item.likeNumber ?? 0}
+                </Space>
+              </Button>
+            ) : (
+              <Button
+                onClick={async () => {
+                  const res = await doLikeUsingPOST({ commentId: item.id });
+                  if (res.code === 0) {
+                    await loadData();
+                    message.success('点赞成功');
+                  } else {
+                    message.error('点赞失败', res.message);
+                  }
+                }}
+              >
+                <Space>
+                  <LikeOutlined />
+                  {item.likeNumber ?? 0}
+                </Space>
+              </Button>
+            )}
           </List.Item>
         )}
       />

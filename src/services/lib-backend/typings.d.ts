@@ -33,6 +33,54 @@ declare namespace API {
     userVO?: UserVO;
   };
 
+  type Appeal = {
+    createTime?: string;
+    id?: number;
+    isDelete?: number;
+    status?: number;
+    updateTime?: string;
+    userId?: number;
+    userReason?: string;
+  };
+
+  type AppealAddRequest = {
+    account?: string;
+    idCard?: string;
+    password?: string;
+    userId?: number;
+    userReason?: string;
+    username?: string;
+  };
+
+  type AppealQueryRequest = {
+    current?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    status?: number;
+    userId?: number;
+  };
+
+  type AppealUpdateRequest = {
+    id?: number;
+    status?: number;
+    userReason?: string;
+  };
+
+  type AppealVO = {
+    appealUser?: UserVO;
+    createTime?: string;
+    id?: number;
+    status?: number;
+    userReason?: string;
+  };
+
+  type BaseResponse = {
+    code?: number;
+    data?: Record<string, any>;
+    message?: string;
+  };
+
   type BaseResponseAnnouncementVO_ = {
     code?: number;
     data?: AnnouncementVO;
@@ -48,6 +96,12 @@ declare namespace API {
   type BaseResponseBoolean_ = {
     code?: number;
     data?: boolean;
+    message?: string;
+  };
+
+  type BaseResponseInt_ = {
+    code?: number;
+    data?: number;
     message?: string;
   };
 
@@ -78,6 +132,18 @@ declare namespace API {
   type BaseResponsePageAnnouncementVO_ = {
     code?: number;
     data?: PageAnnouncementVO_;
+    message?: string;
+  };
+
+  type BaseResponsePageAppeal_ = {
+    code?: number;
+    data?: PageAppeal_;
+    message?: string;
+  };
+
+  type BaseResponsePageAppealVO_ = {
+    code?: number;
+    data?: PageAppealVO_;
     message?: string;
   };
 
@@ -138,18 +204,6 @@ declare namespace API {
   type BaseResponsePageLikeRecordVO_ = {
     code?: number;
     data?: PageLikeRecordVO_;
-    message?: string;
-  };
-
-  type BaseResponsePageLikes_ = {
-    code?: number;
-    data?: PageLikes_;
-    message?: string;
-  };
-
-  type BaseResponsePageLikesVO_ = {
-    code?: number;
-    data?: PageLikesVO_;
     message?: string;
   };
 
@@ -230,6 +284,11 @@ declare namespace API {
     userId?: number;
   };
 
+  type BlacklistMoveOutRequest = {
+    id?: number;
+    userId?: number;
+  };
+
   type BlacklistQueryRequest = {
     current?: number;
     pageSize?: number;
@@ -244,7 +303,7 @@ declare namespace API {
   };
 
   type BlacklistVO = {
-    blackUser?: UserVO;
+    blackUser?: User;
     id?: number;
   };
 
@@ -365,6 +424,7 @@ declare namespace API {
     id?: number;
     isChecked?: number;
     isDelete?: number;
+    likeNumber?: number;
     updateTime?: string;
     userId?: number;
   };
@@ -386,6 +446,7 @@ declare namespace API {
   };
 
   type CommentsUpdateRequest = {
+    content?: string;
     id?: number;
     isChecked?: number;
   };
@@ -396,6 +457,8 @@ declare namespace API {
     content?: string;
     id?: number;
     isChecked?: number;
+    like?: boolean;
+    likeNumber?: number;
     userVO?: UserVO;
   };
 
@@ -434,60 +497,26 @@ declare namespace API {
   };
 
   type LikeRecord = {
-    createTime?: string;
-    id?: number;
-    isDelete?: number;
-    likesId?: number;
-    status?: number;
-    updateTime?: string;
-  };
-
-  type LikeRecordAddRequest = {
-    likesId?: number;
-    status?: number;
-  };
-
-  type LikeRecordQueryRequest = {
-    account?: string;
-    current?: number;
-    pageSize?: number;
-    sortField?: string;
-    sortOrder?: string;
-    status?: number;
-  };
-
-  type LikeRecordVO = {
-    id?: number;
-    likesVO?: LikesVO;
-    status?: number;
-  };
-
-  type Likes = {
     commentId?: number;
     createTime?: string;
     id?: number;
-    isDelete?: number;
     updateTime?: string;
     userId?: number;
   };
 
-  type LikesAddRequest = {
+  type LikeRecordAddRequest = {
     commentId?: number;
   };
 
-  type LikesCancelRequest = {
-    commentId?: number;
-  };
-
-  type LikesQueryRequest = {
-    account?: string;
+  type LikeRecordQueryRequest = {
     current?: number;
     pageSize?: number;
     sortField?: string;
     sortOrder?: string;
+    userId?: number;
   };
 
-  type LikesVO = {
+  type LikeRecordVO = {
     commentsVO?: CommentsVO;
     id?: number;
     userVO?: UserVO;
@@ -662,6 +691,32 @@ declare namespace API {
     total?: number;
   };
 
+  type PageAppeal_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Appeal[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PageAppealVO_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: AppealVO[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
   type PageBlacklist_ = {
     countId?: string;
     current?: number;
@@ -787,32 +842,6 @@ declare namespace API {
     orders?: OrderItem[];
     pages?: number;
     records?: LikeRecordVO[];
-    searchCount?: boolean;
-    size?: number;
-    total?: number;
-  };
-
-  type PageLikes_ = {
-    countId?: string;
-    current?: number;
-    maxLimit?: number;
-    optimizeCountSql?: boolean;
-    orders?: OrderItem[];
-    pages?: number;
-    records?: Likes[];
-    searchCount?: boolean;
-    size?: number;
-    total?: number;
-  };
-
-  type PageLikesVO_ = {
-    countId?: string;
-    current?: number;
-    maxLimit?: number;
-    optimizeCountSql?: boolean;
-    orders?: OrderItem[];
-    pages?: number;
-    records?: LikesVO[];
     searchCount?: boolean;
     size?: number;
     total?: number;

@@ -152,6 +152,9 @@ const BookAdmin: React.FC = () => {
             }}
             submitTimeout={2000}
             onFinish={async (values) => {
+              if (values.bookCover) {
+                values.bookCover = values?.bookCover[0].thumbUrl;
+              }
               const res = await updateBookUsingPOST({ id: record.id, ...values });
               if (res.code === 0) {
                 message.success('提交成功');

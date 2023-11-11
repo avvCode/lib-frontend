@@ -43,7 +43,7 @@
     path: '/user/meetingRoomRecordList',
     hideInMenu: true,
     name: '会议室申请记录',
-    component: './MeetingRoom/MeetingRoomBorrowRecord',
+    component: './User/MeetingRoomBorrowRecord',
   },
   {
     path: '/user',
@@ -57,6 +57,20 @@
     path: 'user/center',
     name: '个人中心',
     component: './User/Center',
+    hideInMenu: true,
+    access: 'login',
+  },
+  {
+    path: 'user/commentRecordList',
+    name: '评论记录',
+    component: './User/CommentRecord',
+    hideInMenu: true,
+    access: 'login',
+  },
+  {
+    path: 'user/likeRecordList',
+    name: '点赞记录',
+    component: './User/LikeRecord',
     hideInMenu: true,
     access: 'login',
   },
@@ -79,6 +93,7 @@
         name: '黑名单管理',
         component: './SuperAdmin/BlackListAdmin',
       },
+      { path: '/admin/appealAdmin', name: '申诉管理', component: './SuperAdmin/AppealAdmin' },
     ],
   },
   {
@@ -96,6 +111,13 @@
     component: './Book/BookAdmin',
   },
   {
+    path: '/book/appeal/admin',
+    icon: 'crown',
+    access: 'bookAdmin',
+    name: '申诉管理',
+    component: './Book/Appeal',
+  },
+  {
     path: '/book/comment/admin',
     icon: 'crown',
     access: 'bookAdmin',
@@ -104,4 +126,5 @@
   },
   { path: '/', redirect: '/welcome' },
   { path: '*', layout: false, component: './404' },
+  { path: '/user/appeal', layout: false, access: 'login', name: '账号申诉', component: './Appeal' },
 ];

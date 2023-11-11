@@ -1,5 +1,8 @@
-import { deleteBookUsingPOST } from '@/services/lib-backend/bookController';
-import { listCommentsVOByPageUsingPOST } from '@/services/lib-backend/commentController';
+import {
+  listCommentsVOByPageUsingPOST,
+  passCommentUsingPOST,
+  unPassCommentUsingPOST,
+} from '@/services/lib-backend/commentController';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Image, message, Modal, Radio, Space, Table, Tag } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -39,13 +42,13 @@ const BookCommentAdmin: React.FC = () => {
     loadData();
   }, [searchParams]);
 
-  const showConfirm = (value: API.DeleteRequest, access: boolean) => {
+  const showConfirm = (value: API.CommentsVO, access: boolean) => {
     if (access) {
       confirm({
         icon: <ExclamationCircleOutlined />,
         content: '确定通过该评论吗？',
         async onOk() {
-          const res = await deleteBookUsingPOST(value);
+          const res = await passCommentUsingPOST(value.id);
           if (res.code === 0) {
             await loadData();
             message.success('已通过');
@@ -62,7 +65,7 @@ const BookCommentAdmin: React.FC = () => {
         icon: <ExclamationCircleOutlined />,
         content: '确定不通过该评论吗？',
         async onOk() {
-          const res = await deleteBookUsingPOST(value);
+          const res = await unPassCommentUsingPOST(value.id);
           if (res.code === 0) {
             await loadData();
             message.success('已不通过');
@@ -114,6 +117,7 @@ const BookCommentAdmin: React.FC = () => {
       title: '审核人',
       dataIndex: 'checkUserVO',
       key: 'checkUserVO',
+      render: (checkUserVO) => checkUserVO && <Tag color="green">{checkUserVO.username}</Tag>,
     },
     {
       title: '审核',
@@ -136,14 +140,15 @@ const BookCommentAdmin: React.FC = () => {
     {
       title: '操作',
       key: 'action',
-      render: (_, record) => (
-        <Space size="middle" key={record.id}>
-          <Button onClick={() => showConfirm(record, true)}>通过</Button>
-          <Button danger onClick={() => showConfirm(record, false)}>
-            不通过
-          </Button>
-        </Space>
-      ),
+      render: (_, record) =>
+        record.isChecked === 0 && (
+          <Space size="middle" key={record.id}>
+            <Button onClick={() => showConfirm(record, true)}>通过</Button>
+            <Button danger onClick={() => showConfirm(record, false)}>
+              不通过
+            </Button>
+          </Space>
+        ),
     },
   ];
 

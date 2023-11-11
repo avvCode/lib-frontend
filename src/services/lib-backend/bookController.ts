@@ -14,6 +14,21 @@ export async function addBookUsingPOST(body: API.BookAddRequest, options?: { [ke
   });
 }
 
+/** borrowBook POST /api/book/borrow */
+export async function borrowBookUsingPOST(
+  body: API.BookBorrowRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseVoid_>('/api/book/borrow', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** deleteBook POST /api/book/delete */
 export async function deleteBookUsingPOST(
   body: API.DeleteRequest,
@@ -65,6 +80,21 @@ export async function listBookVOByPageUsingPOST(
   options?: { [key: string]: any },
 ) {
   return request<API.BaseResponsePageBookVO_>('/api/book/list/page/vo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** returnBook POST /api/book/return */
+export async function returnBookUsingPOST(
+  body: API.BookReturnRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseVoid_>('/api/book/return', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

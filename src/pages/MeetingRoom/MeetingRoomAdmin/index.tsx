@@ -1,13 +1,13 @@
 import {
-  addBookUsingPOST,
-  deleteBookUsingPOST,
-  updateBookUsingPOST,
-} from '@/services/lib-backend/bookController';
-import { listMeetingRoomVOByPageUsingPOST } from '@/services/lib-backend/meetingRoomController';
+  addMeetingRoomUsingPOST,
+  deleteMeetingRoomUsingPOST,
+  listMeetingRoomVOByPageUsingPOST,
+  updateMeetingRoomUsingPOST,
+} from '@/services/lib-backend/meetingRoomController';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormText } from '@ant-design/pro-components';
+import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { ProFormDigit } from '@ant-design/pro-form/lib';
-import { Button, Card, Divider, Form, Input, message, Modal, Space, Table } from 'antd';
+import { Button, Card, Divider, Form, Input, message, Modal, Space, Table, Tag } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import { ColumnsType } from 'antd/es/table';
 import moment from 'moment';
@@ -43,7 +43,7 @@ const MeetingRoomAdmin: React.FC = () => {
   useEffect(() => {
     loadData();
   }, [searchParams]);
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: API.MeetingRoomQueryRequest) => {
     setSearchParams({
       ...searchParams,
       name: values.name,
@@ -59,9 +59,9 @@ const MeetingRoomAdmin: React.FC = () => {
   const showConfirm = (value: API.DeleteRequest) => {
     confirm({
       icon: <ExclamationCircleOutlined />,
-      content: '确定删除该书吗？',
+      content: '确定删除该会议室吗？',
       async onOk() {
-        const res = await deleteBookUsingPOST(value);
+        const res = await deleteMeetingRoomUsingPOST(value);
         if (res.code === 0) {
           await loadData();
           message.success('删除成功');
@@ -84,8 +84,19 @@ const MeetingRoomAdmin: React.FC = () => {
     },
     {
       title: '位置数量',
-      dataIndex: 'bookNumber',
-      key: 'bookNumber',
+      dataIndex: 'capacity',
+      key: 'capacity',
+    },
+    {
+      title: '借用',
+      dataIndex: 'isEmpty',
+      render: (isEmpty) => {
+        if (isEmpty) {
+          return <Tag color="red">已被占用</Tag>;
+        } else {
+          return <Tag color="green">未占用</Tag>;
+        }
+      },
     },
     {
       title: '更新时间',
@@ -122,7 +133,7 @@ const MeetingRoomAdmin: React.FC = () => {
             }}
             submitTimeout={2000}
             onFinish={async (values) => {
-              const res = await updateBookUsingPOST({ id: record.id, ...values });
+              const res = await updateMeetingRoomUsingPOST({ id: record.id, ...values });
               if (res.code === 0) {
                 message.success('提交成功');
                 loadData();
@@ -142,20 +153,43 @@ const MeetingRoomAdmin: React.FC = () => {
               rules={[
                 {
                   required: true,
-                  message: '请输入书名',
+                  message: '请输入会议室编号',
                 },
               ]}
             />
             <ProFormDigit
               width="md"
-              name="bookNumber"
+              name="capacity"
               label="位置数量"
               placeholder="位置数量"
-              initialValue={record.bookNumber ?? 0}
+              initialValue={record.capacity ?? 0}
               rules={[
                 {
                   required: true,
-                  message: '请输入图书数量',
+                  message: '请输入位置数量',
+                },
+              ]}
+            />
+            <ProFormSelect
+              width="md"
+              name="isEmpty"
+              label="状态"
+              placeholder="会议室状态"
+              initialValue={record.isEmpty ?? 0}
+              rules={[
+                {
+                  required: true,
+                  message: '请选择会议室状态',
+                },
+              ]}
+              options={[
+                {
+                  value: 0,
+                  label: '空',
+                },
+                {
+                  value: 1,
+                  label: '已占用',
                 },
               ]}
             />
@@ -168,7 +202,7 @@ const MeetingRoomAdmin: React.FC = () => {
     },
   ];
 
-  const [addForm] = Form.useForm<API.BookAddRequest>();
+  const [addForm] = Form.useForm<API.MeetingRoomAddRequest>();
   return (
     <div>
       <Card>
@@ -188,7 +222,7 @@ const MeetingRoomAdmin: React.FC = () => {
           </Form.Item>
         </Form>
         <Divider />
-        <ModalForm<API.BookAddRequest>
+        <ModalForm<API.MeetingRoomAddRequest>
           width="380px"
           title="新增会议室"
           trigger={
@@ -207,10 +241,10 @@ const MeetingRoomAdmin: React.FC = () => {
           }}
           submitTimeout={2000}
           onFinish={async (values) => {
-            values.bookCover = values?.bookCover[0].thumbUrl;
-            const res = await addBookUsingPOST(values);
+            const res = await addMeetingRoomUsingPOST(values);
             if (res.code === 0) {
               message.success('提交成功');
+              setSearchParams({ ...initSearchParams });
               return true;
             } else {
               message.error(res.message);
@@ -220,7 +254,7 @@ const MeetingRoomAdmin: React.FC = () => {
         >
           <ProFormText
             width="md"
-            name="bookLocation"
+            name="name"
             label="会议室编号"
             placeholder="会议室编号"
             rules={[
@@ -232,7 +266,7 @@ const MeetingRoomAdmin: React.FC = () => {
           />
           <ProFormDigit
             width="md"
-            name="bookNumber"
+            name="capacity"
             label="位置数量"
             placeholder="位置数量"
             initialValue={1}

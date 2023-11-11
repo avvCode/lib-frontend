@@ -62,6 +62,30 @@ export async function listCommentsVOByPageUsingPOST(
   });
 }
 
+/** passComment POST /api/comment/pass */
+export async function passCommentUsingPOST(body: number, options?: { [key: string]: any }) {
+  return request<API.BaseResponse>('/api/comment/pass', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** unPassComment POST /api/comment/unPass */
+export async function unPassCommentUsingPOST(body: number, options?: { [key: string]: any }) {
+  return request<API.BaseResponse>('/api/comment/unPass', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** updateComments POST /api/comment/update */
 export async function updateCommentsUsingPOST(
   body: API.CommentsUpdateRequest,

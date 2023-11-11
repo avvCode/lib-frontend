@@ -33,10 +33,10 @@ const AnnouncementAdmin: React.FC = () => {
       if (res.data) {
         setAnnouncementList(res.data.records ?? []);
       } else {
-        message.error('获取图书数据失败');
+        message.error('获取公告数据失败');
       }
     } catch (e: any) {
-      message.error('获取图书数据失败' + e.message);
+      message.error('获取公告数据失败' + e.message);
     }
   };
   useEffect(() => {
@@ -50,7 +50,6 @@ const AnnouncementAdmin: React.FC = () => {
   const onFinish = async (values: API.AnnouncementQueryRequest) => {
     setSearchParams({
       ...searchParams,
-      name: values.name,
       content: values.content,
     });
   };

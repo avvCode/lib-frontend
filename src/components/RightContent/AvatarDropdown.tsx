@@ -1,5 +1,11 @@
 import { userLogoutUsingPOST } from '@/services/lib-backend/userController';
-import { LogoutOutlined, TableOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  BarsOutlined,
+  LikeOutlined,
+  LogoutOutlined,
+  TableOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
 import { history, useModel } from '@umijs/max';
 import { Spin } from 'antd';
@@ -99,6 +105,16 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ children }) =
       key: 'center',
       icon: <UserOutlined />,
       label: '个人中心',
+    },
+    {
+      key: 'commentRecordList',
+      icon: <BarsOutlined />,
+      label: '评论记录',
+    },
+    {
+      key: 'likeRecordList',
+      icon: <LikeOutlined />,
+      label: '点赞记录',
     },
     {
       key: 'meetingRoomRecordList',

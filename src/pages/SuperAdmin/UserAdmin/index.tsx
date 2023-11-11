@@ -218,6 +218,10 @@ const UserAdmin: React.FC = () => {
                   value: 'meetRoomAdmin',
                   label: '会议室管理员',
                 },
+                {
+                  value: 'ban',
+                  label: '封号',
+                },
               ]}
             />
             <ProFormText width="md" name="password" label="新密码" placeholder="请设置新密码" />

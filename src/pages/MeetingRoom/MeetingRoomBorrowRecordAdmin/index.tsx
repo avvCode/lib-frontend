@@ -134,7 +134,7 @@ const MeetingRoomBorrowRecordAdmin: React.FC = () => {
       title: '审核人',
       dataIndex: 'checkUser',
       key: 'checkUser',
-      render: (checkUser) => <Tag color="green">{checkUser.username}</Tag>,
+      render: (checkUser) => checkUser && <Tag color="green">{checkUser.username}</Tag>,
     },
     {
       title: '审核',

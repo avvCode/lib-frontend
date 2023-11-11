@@ -1,12 +1,16 @@
 import { getInitialState } from '@/app';
+import { listBookBorrowRecordVOByPageUsingPOST } from '@/services/lib-backend/bookBorrowRecordController';
+import { returnBookUsingPOST } from '@/services/lib-backend/bookController';
 import { updateMyUserUsingPOST } from '@/services/lib-backend/userController';
-import { PlusOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import ProCard from '@ant-design/pro-card';
 import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { useModel } from '@umijs/max';
-import { Button, Form, message, Modal, Upload } from 'antd';
+import { Button, Form, message, Modal, Space, Table, Tag, Upload } from 'antd';
+import { ColumnsType } from 'antd/es/table';
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
-import React, { useState } from 'react';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 
 const Center: React.FC = () => {
   const getBase64 = (file: RcFile): Promise<string> =>
@@ -26,6 +30,8 @@ const Center: React.FC = () => {
         return '会议室管理员';
       case 'superAdmin':
         return '超级管理员';
+      case 'ban':
+        return '黑名单';
     }
   };
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -42,7 +48,7 @@ const Center: React.FC = () => {
       url: currentUser?.userAvatar,
     },
   ]);
-
+  const { confirm } = Modal;
   const handleCancel = () => setPreviewOpen(false);
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
@@ -79,6 +85,84 @@ const Center: React.FC = () => {
     </div>
   );
   const [editForm] = Form.useForm<API.User>();
+
+  const initSearchParams = {
+    current: 1,
+    pageSize: 8,
+    sortField: 'createTime',
+    sortOrder: 'desc',
+  };
+  const [searchParams] = useState<API.BookBorrowRecordQueryRequest>({ ...initSearchParams });
+  const [record, setRecord] = useState<API.BookBorrowRecordVO[]>();
+  const loadData = async () => {
+    try {
+      const res = await listBookBorrowRecordVOByPageUsingPOST(searchParams);
+      if (res.data) {
+        setRecord(res.data.records ?? []);
+      } else {
+        message.error('获取用户数据失败');
+      }
+    } catch (e: any) {
+      message.error('获取用户数据失败' + e.message);
+    }
+  };
+  useEffect(() => {
+    loadData();
+  }, [searchParams]);
+  const showConfirm = (value: API.BookBorrowRecordVO) => {
+    confirm({
+      icon: <ExclamationCircleOutlined />,
+      content: '还书？',
+      async onOk() {
+        const res = await returnBookUsingPOST({ borrowBookRecordId: value.id });
+        if (res.code === 0) {
+          await loadData();
+          message.success('已通过');
+        } else {
+          message.error('');
+        }
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+  const columns: ColumnsType<API.BookBorrowRecordVO> = [
+    {
+      title: '书名',
+      dataIndex: 'bookVO',
+      key: 'bookVO',
+      render: (bookVO) => <>{bookVO.bookName}</>,
+    },
+    {
+      title: '起始时间',
+      dataIndex: 'createTime',
+      key: 'createTime',
+      render: (text) => moment(text).format('YYYY-MM-DD HH:mm:ss'),
+    },
+    {
+      title: '借出天数',
+      dataIndex: 'borrowDays',
+      key: 'borrowDays',
+    },
+    {
+      title: '是否归还',
+      dataIndex: 'isReturned',
+      key: 'isReturned',
+      render: (isReturned) =>
+        isReturned === 0 ? <Tag color="red">未归还</Tag> : <Tag color="green">已还</Tag>,
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle" key={record.id}>
+          <Button onClick={() => showConfirm(record)}>还书</Button>
+        </Space>
+      ),
+    },
+  ];
+
   return (
     <div>
       <ProCard split="vertical" boxShadow>
@@ -189,7 +273,7 @@ const Center: React.FC = () => {
           </>
         </ProCard>
         <ProCard title="借书记录" headerBordered>
-          <div style={{ height: 360 }}>右侧内容</div>
+          <Table columns={columns} dataSource={record} />
         </ProCard>
       </ProCard>
     </div>

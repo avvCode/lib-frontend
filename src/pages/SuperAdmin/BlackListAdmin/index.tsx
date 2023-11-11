@@ -1,7 +1,9 @@
-import { listBlacklistVOByPageUsingPOST } from '@/services/lib-backend/blackListController';
-import { deleteUserUsingPOST, updateUserUsingPOST } from '@/services/lib-backend/userController';
+import {
+  deleteBlacklistUsingPOST,
+  listBlacklistVOByPageUsingPOST,
+  moveOutBlackListUsingPOST,
+} from '@/services/lib-backend/blackListController';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { ModalForm, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { Button, Card, Divider, Form, Input, message, Modal, Space, Table } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
 import { ColumnsType } from 'antd/es/table';
@@ -40,27 +42,48 @@ const BlackListAdmin: React.FC = () => {
     loadData();
   }, [searchParams]);
 
-  const showConfirm = (value: API.DeleteRequest) => {
-    confirm({
-      icon: <ExclamationCircleOutlined />,
-      content: '确定删除该用户吗？',
-      async onOk() {
-        console.log('OK');
-        const res = await deleteUserUsingPOST(value);
-        if (res.code === 0) {
-          await loadData();
-          message.success('删除成功');
-        } else {
-          message.error('');
-        }
-      },
-      async onCancel() {
-        console.log('Cancel');
-      },
-    });
+  const showConfirm = (value: API.BlacklistVO, flag: number) => {
+    if (flag) {
+      confirm({
+        icon: <ExclamationCircleOutlined />,
+        content: '确定彻底删除该用户吗？',
+        async onOk() {
+          console.log('OK');
+          const res = await deleteBlacklistUsingPOST(value);
+          if (res.code === 0) {
+            await loadData();
+            message.success('删除成功');
+          } else {
+            message.error('');
+          }
+        },
+        async onCancel() {
+          console.log('Cancel');
+        },
+      });
+    } else {
+      confirm({
+        icon: <ExclamationCircleOutlined />,
+        content: '确定取消拉黑该用户吗？',
+        async onOk() {
+          console.log('OK');
+          const res = await moveOutBlackListUsingPOST({
+            id: value.id,
+            userId: value.blackUser?.id,
+          });
+          if (res.code === 0) {
+            await loadData();
+            message.success('删除成功');
+          } else {
+            message.error('');
+          }
+        },
+        async onCancel() {
+          console.log('Cancel');
+        },
+      });
+    }
   };
-
-  const [editForm] = Form.useForm<API.BlacklistVO>();
 
   const columns: ColumnsType<API.BlacklistVO> = [
     {
@@ -110,99 +133,10 @@ const BlackListAdmin: React.FC = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle" key={record.id}>
-          <ModalForm<API.User>
-            width="380px"
-            title="修改用户"
-            trigger={
-              <Button type="text" size="small">
-                编辑
-              </Button>
-            }
-            form={editForm}
-            autoFocusFirstInput
-            modalProps={{
-              destroyOnClose: true,
-              onCancel: () => {
-                console.log('run');
-              },
-            }}
-            submitTimeout={2000}
-            onFinish={async (values) => {
-              const res = await updateUserUsingPOST({ id: record.id, ...values });
-              if (res.code === 0) {
-                message.success('提交成功');
-                loadData();
-                return true;
-              } else {
-                message.error(res.message);
-                return false;
-              }
-            }}
-          >
-            <ProFormText
-              width="md"
-              name="username"
-              label="姓名"
-              initialValue={record.username}
-              placeholder="请输入真实姓名"
-              rules={[
-                {
-                  required: true,
-                  message: '请输入姓名',
-                },
-              ]}
-            />
-            <ProFormText
-              width="md"
-              name="idCard"
-              label="身份证号"
-              initialValue={record.idCard}
-              placeholder="请输入真实身份证号"
-              rules={[
-                {
-                  required: true,
-                  message: '请输入身份证',
-                },
-              ]}
-            />
-            <ProFormText
-              width="md"
-              name="account"
-              label="账号"
-              initialValue={record.account}
-              placeholder="请输入账号"
-              rules={[
-                {
-                  required: true,
-                  message: '请输入账号',
-                },
-              ]}
-            />
-            <ProFormSelect
-              width="md"
-              name="role"
-              label="设置权限"
-              initialValue={record.role}
-              placeholder="设置权限"
-              allowClear
-              options={[
-                {
-                  value: 'user',
-                  label: '普通用户',
-                },
-                {
-                  value: 'bookAdmin',
-                  label: '图书管理员',
-                },
-                {
-                  value: 'meetRoomAdmin',
-                  label: '会议室管理员',
-                },
-              ]}
-            />
-            <ProFormText width="md" name="password" label="新密码" placeholder="请设置新密码" />
-          </ModalForm>
-          <a style={{ color: 'red' }} onClick={() => showConfirm(record)}>
+          <Button type="text" size="small" onClick={() => showConfirm(record, 0)}>
+            取消拉黑
+          </Button>
+          <a style={{ color: 'red' }} onClick={() => showConfirm(record, 1)}>
             删除
           </a>
         </Space>

@@ -62,6 +62,21 @@ export async function listBlacklistVOByPageUsingPOST(
   });
 }
 
+/** moveOutBlackList POST /api/blacklist/out */
+export async function moveOutBlackListUsingPOST(
+  body: API.BlacklistMoveOutRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponse>('/api/blacklist/out', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** updateBlacklist POST /api/blacklist/update */
 export async function updateBlacklistUsingPOST(
   body: API.BlacklistUpdateRequest,
